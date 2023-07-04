@@ -73,6 +73,7 @@ const AddExpenseForm = ({ budgets }) => {
 								))}
 						</select>
 					</div>
+				</div>
 					<button
 						type='submit'
 						className='btn btn--dark'
@@ -86,7 +87,6 @@ const AddExpenseForm = ({ budgets }) => {
 							</>
 						)}
 					</button>
-				</div>
 			</fetcher.Form>
 		</div>
 	);

@@ -1,6 +1,6 @@
-import { useLoaderData } from 'react-router-dom';
+import { Link, useLoaderData } from 'react-router-dom';
 
-import { createBudget, createExpense, fetchData } from '../helpers';
+import { createBudget, createExpense, deleteItem, fetchData } from '../helpers';
 import Intro from '../components/Intro';
 import AddBudgetForm from '../components/AddBudgetForm';
 import { toast } from 'react-toastify';
@@ -8,10 +8,10 @@ import AddExpenseForm from '../components/AddExpenseForm';
 import BudgetItem from '../components/BudgetItem';
 import Table from '../components/Table';
 
-export function dashboardLoader() {
-	const userName = fetchData('userName');
-	const budgets = fetchData('budgets');
-	const expenses = fetchData('expenses');
+export async function dashboardLoader() {
+	const userName = await fetchData('userName');
+	const budgets = await fetchData('budgets');
+	const expenses = await fetchData('expenses');
 	return { userName, budgets, expenses };
 }
 
@@ -48,7 +48,18 @@ export async function dashboardAction({ request }) {
 			});
 			return toast.success(`Expense ${values.newExpense} created`);
 		} catch (e) {
-			throw new Error('There was a problem creating your expnse.');
+			throw new Error('There was a problem creating your expense.');
+		}
+	}
+	if (_action === 'deleteExpense') {
+		try {
+			deleteItem({
+				key:"expenses",
+				id:values.expenseId,
+			});
+			return toast.success(`Expense deleted!`);
+		} catch (e) {
+			throw new Error('There was a problem deleting your expense.');
 		}
 	}
 }
@@ -82,7 +93,8 @@ const Dashboard = () => {
 								{expenses && expenses.length > 0 ? (
 									<div className='grid-md'>
 										<h2>Recent Expenses</h2>
-										<Table expenses={expenses.sort((a, b) => b.createdAt - a.createdAt)} />
+										<Table expenses={expenses.sort((a, b) => b.createdAt - a.createdAt).slice(0,8)} />
+										{expenses.length > 8&& (<Link to='expenses' class='btn btn--dark'>View all expenses</Link>)}
 									</div>
 								) : (
 									<div></div>
